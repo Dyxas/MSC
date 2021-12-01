@@ -10,6 +10,10 @@ public class playerControll : MonoBehaviour
     private bool IsSeat;
     private float LastAttackTime;
 
+    private int count = 0;
+    private bool IsAlways => count == 0;
+      
+
     [SerializeField] private Animator m_animator = null;
 
     private InstrumentUse _instumentUse;
@@ -59,6 +63,12 @@ public class playerControll : MonoBehaviour
         _instumentUse = null;
     }
 
+
+    private void WASDControll()
+    {
+
+    }
+
     void Update()
     {
 
@@ -93,7 +103,7 @@ public class playerControll : MonoBehaviour
         var c = Camera.main.transform;
 
         RaycastHit raycast = new RaycastHit();
-        Physics.Raycast(c.position, c.TransformDirection(Vector3.forward),out raycast, 100f);
+        Physics.Raycast(c.position, c.TransformDirection(Vector3.forward), out raycast, 100f);
 
 
         if (Input.GetMouseButtonUp(0))
@@ -132,6 +142,7 @@ public class playerControll : MonoBehaviour
                 }
             }
         }
+
 
         float mw = Input.GetAxis("Mouse ScrollWheel");
         if (mw != 0)
