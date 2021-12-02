@@ -106,7 +106,7 @@ public class SimpleSampleCharacterControl : MonoBehaviour
 
     private void Update()
     {
-        if (gameObject.GetComponent<playerControll>().IsSeating()) return;
+        //if (gameObject.GetComponent<playerControll>().IsSeating()) return;
         if (!m_jumpInput && Input.GetKey(KeyCode.Space))
         {
             m_jumpInput = true;
@@ -115,7 +115,7 @@ public class SimpleSampleCharacterControl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (gameObject.GetComponent<playerControll>().IsSeating()) return;
+        //if (gameObject.GetComponent<playerControll>().IsSeating()) return;
         m_animator.SetBool("Grounded", m_isGrounded);
 
         switch (m_controlMode)
@@ -139,7 +139,7 @@ public class SimpleSampleCharacterControl : MonoBehaviour
 
     private void TankUpdate()
     {
-        if (gameObject.GetComponent<playerControll>().IsSeating()) return;
+        //if (gameObject.GetComponent<playerControll>().IsSeating()) return;
 
         float v = Input.GetAxis("Vertical");
         float h = Input.GetAxis("Horizontal");

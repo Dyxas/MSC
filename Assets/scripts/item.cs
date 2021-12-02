@@ -1,59 +1,27 @@
 ﻿using UnityEngine;
 
-public class item : MonoBehaviour
+public class Item : MonoBehaviour
 {
-    public GameObject PickedPlayer;
-    public bool isPickupItem;
-    Outline outl;
 
-    public InstrumentUse.instrument_Types instrument_Type;
-    public bool IsInstrument;
-    public void IsSelected()
+    private Outline _outl { get; set; }
+
+    public void Selected()
     {
-        if (outl != null) return;
-        outl = gameObject.AddComponent<Outline>();
-        outl.OutlineMode = Outline.Mode.OutlineAll;
-        outl.OutlineColor = Color.yellow;
-        outl.OutlineWidth = 5f;
-    }
-
-    public InstrumentUse getInstrument()
-    {
-        var obj = Instantiate(Resources.Load("Prefabs/" + gameObject.name, typeof(GameObject))) as GameObject;
-        obj.AddComponent<InstrumentUse>();
-        obj.GetComponent<InstrumentUse>().Set(instrument_Type);
-        obj.gameObject.transform.localScale = gameObject.transform.localScale;
-
-        if (gameObject.GetComponent<MeshCollider>() != null)
-        {
-            obj.AddComponent<MeshCollider>().convex = true;
-            obj.GetComponent<MeshCollider>().sharedMesh = gameObject.GetComponent<MeshCollider>().sharedMesh;
-        } else
-        {
-            obj.AddComponent<BoxCollider>().size = gameObject.GetComponent<BoxCollider>().size;
+        if (_outl != null) {
+            return;
         }
-       
-        return obj.GetComponent<InstrumentUse>();
+
+
+        _outl = gameObject.AddComponent<Outline>();
+        _outl.OutlineMode = Outline.Mode.OutlineAll;
+        _outl.OutlineColor = Color.yellow;
+        _outl.OutlineWidth = 5f;
     }
 
     public void UnSelected()
     {
-        if (outl != null)
+        if (_outl != null) {
             Destroy(gameObject.GetComponent<Outline>());
-    }
-
-    public bool CanPickup()
-    {
-        if (isPickupItem)
-            return true;
-
-        return false;
-    }
-
-    public void Pickup()
-    {
-        if (!CanPickup()) return;
-        Destroy(gameObject);
-
+        }
     }
 }

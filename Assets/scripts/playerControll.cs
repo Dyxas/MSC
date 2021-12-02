@@ -1,25 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class playerControll : MonoBehaviour
 {
 
-    public Transform handR;
-    public Transform LTigh, LCalf, RThigh, RCalf;
 
-    private bool IsSeat;
-    private float LastAttackTime;
 
-    private int count = 0;
-    private bool IsAlways => count == 0;
-      
 
-    [SerializeField] private Animator m_animator = null;
+    [SerializeField] public float walkScale = 10;
+    [SerializeField] public float mouseMoveSpeedScale = 15;
 
-    private InstrumentUse _instumentUse;
-    private item activeItem;
 
-    public void GetInstrument()
+    private Item _seeItem { get; set; }
+
+    private readonly float _smoothMoveScale = 10;
+    private readonly float _distanceVisualItem = 100f;
+    private Transform _cameraTransform { get; set; }
+    /*public void GetInstrument()
     {
 
         Vector3 scale = (_instumentUse.InstrumentPrefab as GameObject).transform.localScale;
@@ -28,87 +26,64 @@ public class playerControll : MonoBehaviour
         (_instumentUse.InstrumentPrefab as GameObject).transform.localPosition = new Vector3(-0.0091f, 0.0023f, -0.0007f);
     }
 
-    public bool IsSeating()
+    /*public bool IsSeating()
     {
         return IsSeat;
-    }
+    }*/
 
     void Start()
     {
-        //RenderSettings.ambientLight = Color.black;
-        //RenderSettings.ambientIntensity = -0.2f;
+        _cameraTransform = Camera.main.transform;
     }
 
-    void FixedUpdate()
+    /* private void DropActiveItem()
+     {
+         if (_instumentUse == null) return;
+         _instumentUse.gameObject.transform.parent = null;
+         _instumentUse.transform.position = transform.position + new Vector3(0.5f, 0, 0);
+         _instumentUse.gameObject.AddComponent<Rigidbody>();
+         var instrumentTemp = _instumentUse.gameObject.GetComponent<InstrumentUse>();
+         var item =_instumentUse.gameObject.AddComponent<item>();
+         item.gameObject.name = item.gameObject.name.Replace("(Clone)", "");
+         item.isPickupItem = true;
+         item.IsInstrument = instrumentTemp._Type != InstrumentUse.instrument_Types.None;
+         item.instrument_Type = instrumentTemp._Type;
+
+         Destroy(instrumentTemp);
+
+         m_animator.SetTrigger("Pickup");
+         _instumentUse = null;
+     }*/
+
+
+    private void MouseControll()
     {
+        float axisX = Input.GetAxis("Mouse X") * mouseMoveSpeedScale * Time.timeScale;
+        float axisY = Input.GetAxis("Mouse Y") * mouseMoveSpeedScale * Time.timeScale;
+        gameObject.transform.Rotate(0, axisX, 0);
+
+        if (_cameraTransform.eulerAngles.x + Math.Abs(axisY) >= 52 && _cameraTransform.eulerAngles.x + Math.Abs(axisY) < 80 && axisY < 0) return;
+        if (_cameraTransform.eulerAngles.x - Math.Abs(axisY) <= 311 && _cameraTransform.eulerAngles.x - Math.Abs(axisY) >= 80 && axisY > 0) return;
+        _cameraTransform.eulerAngles += new Vector3(-axisY, 0, 0);
 
     }
-
-    private void DropActiveItem()
-    {
-        if (_instumentUse == null) return;
-        _instumentUse.gameObject.transform.parent = null;
-        _instumentUse.transform.position = transform.position + new Vector3(0.5f, 0, 0);
-        _instumentUse.gameObject.AddComponent<Rigidbody>();
-        var instrumentTemp = _instumentUse.gameObject.GetComponent<InstrumentUse>();
-        var item =_instumentUse.gameObject.AddComponent<item>();
-        item.gameObject.name = item.gameObject.name.Replace("(Clone)", "");
-        item.isPickupItem = true;
-        item.IsInstrument = instrumentTemp._Type != InstrumentUse.instrument_Types.None;
-        item.instrument_Type = instrumentTemp._Type;
-        
-        Destroy(instrumentTemp);
-
-        m_animator.SetTrigger("Pickup");
-        _instumentUse = null;
-    }
-
 
     private void WASDControll()
     {
+        Vector3 transformPosition = Vector3.zero;
 
+        if (Input.GetKey(Utilities.Controlls["Left"])) {
+            transformPosition = Vector3.left;
+        } else if (Input.GetKey(Utilities.Controlls["Right"])) {
+            transformPosition = Vector3.right;
+        }
+
+        if (transformPosition.Equals(Vector3.zero)) return;
+        transform.Translate(transformPosition / _smoothMoveScale * Time.deltaTime * walkScale);
     }
 
-    void Update()
-    {
-
-
-        if (IsSeat)
-        {
-            if (Input.GetKey(KeyCode.E))
-            {
-                m_animator.enabled = true;
-                IsSeat = false;
-                GetComponent<Rigidbody>().detectCollisions = true;
-                GetComponent<Rigidbody>().isKinematic = false;
-                transform.SetPositionAndRotation(new Vector3(transform.position.x + 1f, transform.position.y, transform.position.z), new Quaternion());
-            }
-            return;
-        }
-
-        if (Input.GetKey(KeyCode.G))
-        {
-            if (_instumentUse != null)
-                DropActiveItem();
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(new Vector3(-0.01f, 0, 0));
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(new Vector3(0.01f, 0, 0));
-        }
-        var c = Camera.main.transform;
-
-        RaycastHit raycast = new RaycastHit();
-        Physics.Raycast(c.position, c.TransformDirection(Vector3.forward), out raycast, 100f);
-
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (_instumentUse != null && _instumentUse._Type == InstrumentUse.instrument_Types.Axe)
+    /*
+      if (_instumentUse != null && _instumentUse._Type == InstrumentUse.instrument_Types.Axe)
             {
                 
                 if (raycast.collider.GetComponent<Tree>() != null)
@@ -120,30 +95,65 @@ public class playerControll : MonoBehaviour
                     }
                 }
             }
-        }
 
-        if (raycast.collider != null)
-        {
-            if (raycast.collider.gameObject.layer == 10)
-            {
-                if (Input.GetKeyUp(KeyCode.E))
-                {
-                    m_animator.enabled = false;
-                    GetComponent<Rigidbody>().detectCollisions = false;
-                    GetComponent<Rigidbody>().isKinematic = true;
-                    Vector3 pos = raycast.collider.transform.position;
-                    transform.SetPositionAndRotation(new Vector3(pos.x, pos.y + 0.3f, pos.z), new Quaternion());
-                    LTigh.eulerAngles = new Vector3(0, 90, 0);
-                    RThigh.eulerAngles = new Vector3(0, 90, 0);
-                    RCalf.eulerAngles = new Vector3(0, 85, 0);
-                    LCalf.eulerAngles = new Vector3(0, 85, 0);
+    */
 
-                    IsSeat = true;
+    private void AttackControll()
+    {
+        if (!Input.GetKey(Utilities.Controlls["Attack"]))
+            return;
+
+    }
+
+    private void CheckSeeItem()
+    {
+        Item item;
+        if (!GetSeeItem(out item)) {
+            if (_seeItem != null) {
+                _seeItem.UnSelected();
+                _seeItem = null;
+            }
+            return;
+        } else {
+            if (_seeItem == item) {
+                return;
+            } else {
+                if (_seeItem != null) {
+                    _seeItem.UnSelected();
                 }
             }
         }
 
+        
+        
+        _seeItem = item;
+        _seeItem.Selected();
+    }
 
+    private bool GetSeeItem(out Item item)
+    {
+        RaycastHit raycast = new RaycastHit();
+        Physics.Raycast(_cameraTransform.position, _cameraTransform.TransformDirection(Vector3.forward), out raycast, _distanceVisualItem);
+
+        if (raycast.collider == null || raycast.collider.GetComponent<Item>() == null) {
+            item = null;
+            return false;
+        }
+
+        item = raycast.collider.GetComponent<Item>();
+        return true;
+    }
+
+
+    void Update()
+    {
+        WASDControll();
+        MouseControll();
+        AttackControll();
+        CheckSeeItem();
+        /*
+
+        
         float mw = Input.GetAxis("Mouse ScrollWheel");
         if (mw != 0)
         {
@@ -207,14 +217,7 @@ public class playerControll : MonoBehaviour
         }
        
 
-        
-        gameObject.transform.Rotate(0, Input.GetAxis("Mouse X") * 1, 0);
-
-     
-        if (c.localEulerAngles.y <= 353 && -Input.GetAxis("Mouse Y") < 0) return;
-        if (c.localEulerAngles.y >= 359.7 && -Input.GetAxis("Mouse Y") > 0) return;
-  
-        
-        c.Rotate(-Input.GetAxis("Mouse Y") * 1, 0, 0);
+       
+        */
     }
 }

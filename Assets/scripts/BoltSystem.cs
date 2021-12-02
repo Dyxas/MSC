@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BoltSystem : item
+public class BoltSystem : Item
 {
 
     public enum BoltType { Screw, Bolt }
