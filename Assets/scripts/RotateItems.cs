@@ -5,26 +5,28 @@ using UnityEngine;
 public class RotateItems : MonoBehaviour
 {
     // Start is called before the first frame update
-    public int oneRotate = 90;
-    public int maxRotate = 0;
+    public float oneRotateDeg = 30f;
+    public float maxRotateDeg = 0;
+    public int maxRotateVal = 0;
 
-    public float defaultPos;
+    private int steps;
+    private int currentStep = 0;
+    private int currentRotateVal = 0;
     private bool isRotatingAlways = false;
     
     void Start()
     {
-        if(maxRotate == 0)
+        if(maxRotateDeg == 0 && maxRotateVal == 0)
         {
             isRotatingAlways = true;
         }
 
-        if (maxRotate < oneRotate && !isRotatingAlways)
+        if (maxRotateDeg < oneRotateDeg && !isRotatingAlways)
         {
             Debug.LogError("Max rotate is lower than one rotate");
-            Application.Quit();
             UnityEditor.EditorApplication.isPlaying = false;
         }
-        defaultPos = transform.position.y;
+        steps = 360 / (int)oneRotateDeg;
     }
 
     
@@ -32,28 +34,55 @@ public class RotateItems : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetAxis("Mouse ScrollWheel") > 0)
-        {
-            if(isRotatingAlways)
-            {
-                var vector = transform.rotation;
-                if(vector.y < 360)
-                    transform.Rotate(0, 0, 5f);
-                else
-                    transform.rotation.Set(0, 0, 0, 0);
 
+        //Quaternion.Euler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        var mw = Input.GetAxis("Mouse ScrollWheel");
+        if (mw > 0)
+        {
+            Debug.Log(isRotatingAlways);
+            if (isRotatingAlways)
+            {
+                transform.Rotate(0, oneRotateDeg, 0, Space.World);
+                Debug.Log(transform.rotation.z);
+            }
+            else if (maxRotateDeg != 0)
+            {
+                
+                if (maxRotateDeg < 180)
+                    if (transform.rotation.z < maxRotateDeg)
+                        transform.Rotate(0, 0, oneRotateDeg, Space.World);
+                    else { }
+
+                    if (transform.rotation.z < (maxRotateDeg % 180 - 180))
+                        transform.Rotate(0, 0, oneRotateDeg, Space.World);
+            }
+            else if (maxRotateVal != 0 && maxRotateVal > currentRotateVal)
+            {
+                
+                if(currentStep < steps)
+                {
+                    currentStep++;
+                    transform.Rotate(0, 0, oneRotateDeg);
+                }
+                else
+                {
+                    currentRotateVal++;
+                    currentStep = 0;
+                }
             }
         }
-        else if(Input.GetAxis("Mouse ScrollWheel") < 0)
+        else if(mw < 0)
         {
             if (isRotatingAlways)
             {
-                var vector = transform.rotation;
-                if (vector.y < 360)
-                    transform.Rotate(0, 0, -5f);
-                else
-                    transform.rotation.Set(0, 0, 0, 0);
+                transform.Rotate(0, 0, (0 - oneRotateDeg), Space.World);
+            }
+            else if (maxRotateDeg != 0 || maxRotateVal != 0)
+            {
+                if (transform.rotation.z > 0)
+                {
 
+                }
             }
         }
     }
