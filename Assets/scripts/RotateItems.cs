@@ -8,6 +8,7 @@ public class RotateItems : MonoBehaviour
     public float oneRotateDeg = 45f;
     public float maxRotateDeg = 0;
     public int maxRotateVal = 0;
+    public bool reverse;
     public bool x = false;
     public bool y = false;
     public bool z = false;
@@ -63,9 +64,66 @@ public class RotateItems : MonoBehaviour
         {
             settedEulerAxis = transform.eulerAngles.z;
         }
+        if(reverse)
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") < 0)
+            {
+                if (isRotatingAlways)
+                {
+                    transform.Rotate(settedAxis, Space.World);
+                }
+                else if (maxRotateDeg != 0)
+                {
+                    Debug.Log(settedEulerAxis);
+                    if (settedEulerAxis > 1)
+                        transform.Rotate(settedAxis, Space.World);
+                }
+                else if (maxRotateVal != 0 && maxRotateVal > currentRotateVal)
+                {
+                    if (Mathf.Round(settedEulerAxis) > oneRotateDeg)
+                    {
+                        transform.Rotate(settedAxis, Space.World);
+                    }
+                    else if (currentRotateVal < maxRotateVal)
+                    {
+                        currentRotateVal++;
+                        transform.Rotate(settedAxis, Space.World);
+                    }
+
+                }
+            }
+            else if (Input.GetAxis("Mouse ScrollWheel") > 0)
+            {
+                if (isRotatingAlways)
+                {
+                    transform.Rotate(settedReverseAxis, Space.World);
+                }
+                else if (maxRotateDeg != 0)
+                {
+                    Debug.Log(settedEulerAxis);
+                    if (settedEulerAxis < maxRotateDeg || Mathf.Round(settedEulerAxis) == 0)
+                    {
+                        transform.Rotate(settedReverseAxis, Space.World);
+                    }
+                }
+                else if (maxRotateVal != 0 && currentRotateVal >= 0)
+                {
+
+                    if (settedEulerAxis < 360 - oneRotateDeg)
+                    {
+                        transform.Rotate(settedReverseAxis, Space.World);
+                    }
+                    else if (currentRotateVal > 0)
+                    {
+                        transform.Rotate(settedReverseAxis, Space.World);
+                        currentRotateVal--;
+                    }
+
+                }
+            }
+            return;
+        }
         //Quaternion.Euler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        var mw = Input.GetAxis("Mouse ScrollWheel");
-        Item item;
 
         if(Input.GetKeyUp(KeyCode.R))
         {
@@ -73,7 +131,7 @@ public class RotateItems : MonoBehaviour
             currentRotateVal = 0;
         }
 
-        if (mw > 0)
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
             if (isRotatingAlways)
             {
@@ -87,6 +145,8 @@ public class RotateItems : MonoBehaviour
             }
             else if (maxRotateVal != 0 && maxRotateVal > currentRotateVal)
             {
+                Debug.Log(settedEulerAxis);
+                Debug.Log(currentRotateVal);
                 if (Mathf.Round(settedEulerAxis) < 360 - oneRotateDeg)
                 {
                     transform.Rotate(settedAxis, Space.World);
@@ -99,11 +159,10 @@ public class RotateItems : MonoBehaviour
 
             }
         }
-        else if(mw < 0)
+        else if(Input.GetAxis("Mouse ScrollWheel")  < 0)
         {
             if (isRotatingAlways)
             {
-                float temp = oneRotateDeg * -1;
                 transform.Rotate(settedReverseAxis, Space.World);
             }
             else if (maxRotateDeg != 0)
@@ -116,7 +175,8 @@ public class RotateItems : MonoBehaviour
             }
             else if (maxRotateVal != 0 && currentRotateVal >= 0)
             {
-                
+                Debug.Log(settedEulerAxis);
+                Debug.Log(currentRotateVal);
                 if (settedEulerAxis > oneRotateDeg - 1)
                 {
                     transform.Rotate(settedReverseAxis, Space.World);
