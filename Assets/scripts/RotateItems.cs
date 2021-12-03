@@ -74,7 +74,6 @@ public class RotateItems : MonoBehaviour
                 }
                 else if (maxRotateDeg != 0)
                 {
-                    Debug.Log(settedEulerAxis);
                     if (settedEulerAxis > 1)
                         transform.Rotate(settedAxis, Space.World);
                 }
@@ -100,7 +99,6 @@ public class RotateItems : MonoBehaviour
                 }
                 else if (maxRotateDeg != 0)
                 {
-                    Debug.Log(settedEulerAxis);
                     if (settedEulerAxis < maxRotateDeg || Mathf.Round(settedEulerAxis) == 0)
                     {
                         transform.Rotate(settedReverseAxis, Space.World);
@@ -139,14 +137,11 @@ public class RotateItems : MonoBehaviour
             }
             else if (maxRotateDeg != 0)
             {
-                Debug.Log(settedEulerAxis);
                 if (settedEulerAxis < maxRotateDeg)
                     transform.Rotate(settedAxis, Space.World);
             }
             else if (maxRotateVal != 0 && maxRotateVal > currentRotateVal)
             {
-                Debug.Log(settedEulerAxis);
-                Debug.Log(currentRotateVal);
                 if (Mathf.Round(settedEulerAxis) < 360 - oneRotateDeg)
                 {
                     transform.Rotate(settedAxis, Space.World);
@@ -167,7 +162,6 @@ public class RotateItems : MonoBehaviour
             }
             else if (maxRotateDeg != 0)
             {
-                Debug.Log(settedEulerAxis);
                 if (settedEulerAxis > 1)
                 {
                     transform.Rotate(settedReverseAxis, Space.World);
@@ -175,8 +169,6 @@ public class RotateItems : MonoBehaviour
             }
             else if (maxRotateVal != 0 && currentRotateVal >= 0)
             {
-                Debug.Log(settedEulerAxis);
-                Debug.Log(currentRotateVal);
                 if (settedEulerAxis > oneRotateDeg - 1)
                 {
                     transform.Rotate(settedReverseAxis, Space.World);

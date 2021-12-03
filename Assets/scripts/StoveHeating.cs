@@ -4,25 +4,54 @@ using UnityEngine;
 
 public class StoveHeating : MonoBehaviour
 {
-    public GameObject KnobData;
-    public Material heat;
-    public Material standart;
+    public GameObject lightData;
+    public bool x = false;
+    public bool y = false;
+    public bool z = false;
+
+    private float settedEulerAxis;
+    private float settedDefaultEulerAxis;
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (x)
+        {
+            settedDefaultEulerAxis = transform.eulerAngles.x;
+        }
+        if (y)
+        {
+            settedDefaultEulerAxis = transform.eulerAngles.y;
+        }
+        if (z)
+        {
+            settedDefaultEulerAxis = transform.eulerAngles.z;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Mathf.Round(KnobData.transform.eulerAngles.z) != 180)
+        Debug.Log(settedEulerAxis);
+        Debug.Log(settedDefaultEulerAxis);
+        if (x)
         {
-            gameObject.GetComponent<MeshRenderer>().material = heat;
+            settedEulerAxis = transform.eulerAngles.x;
+        }
+        if (y)
+        {
+            settedEulerAxis = transform.eulerAngles.y;
+        }
+        if (z)
+        {
+            settedEulerAxis = transform.eulerAngles.z;
+        }
+        if (Mathf.Round(settedEulerAxis) != Mathf.Round(settedDefaultEulerAxis))
+        {
+            lightData.SetActive(true);
         }
         else
         {
-            gameObject.GetComponent<MeshRenderer>().material = standart;
+            lightData.SetActive(false);
         }
     }
 }
